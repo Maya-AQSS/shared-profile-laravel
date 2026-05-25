@@ -1,14 +1,13 @@
 {
-    "name": "maya/shared-profile-laravel",
-    "description": "Shared user profile endpoints (GET /me, PUT /me/locale) for Maya Laravel microservices. Provides Controller, FormRequest, Service, Repository contracts, DTO and Resource. Apps extend behaviour via UserProfileResolverInterface and LocaleWriterInterface.",
+    "name": "ceedcv-maya/shared-profile-laravel",
+    "description": "User profile endpoints for Laravel + Keycloak: GET /me, PUT /me/locale, configurable resolvers, FormRequest validation.",
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/Maya-AQSS/shared-profile-laravel",
     "support": {
-        "issues": "https://github.com/Maya-AQSS/shared-profile-laravel/issues",
+        "issues": "https://github.com/Maya-AQSS/maya_platform/issues",
         "source": "https://github.com/Maya-AQSS/shared-profile-laravel"
     },
-    "version": "0.1.0",
     "require": {
         "php": "^8.4",
         "illuminate/contracts": "^11.0 || ^12.0 || ^13.0",
@@ -30,5 +29,21 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "keywords": [
+        "laravel",
+        "keycloak",
+        "profile",
+        "me",
+        "locale",
+        "ceedcv",
+        "maya"
+    ],
+    "authors": [
+        {
+            "name": "CEEDCV",
+            "email": "info@ceedcv.es",
+            "homepage": "https://ceedcv.es"
+        }
+    ]
 }
