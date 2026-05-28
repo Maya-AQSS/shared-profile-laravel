@@ -47,6 +47,7 @@ final class AcademicDataReader implements AcademicDataReaderInterface
      *   study_type_ids: list<string>,
      *   study_ids: list<string>,
      *   module_ids: list<string>,
+     *   department_ids: list<string>,
      *   team_ids: list<string>,
      * }
      */
@@ -60,12 +61,14 @@ final class AcademicDataReader implements AcademicDataReaderInterface
             return Cache::remember(
                 $this->cacheKey($userId),
                 self::CACHE_TTL,
-                fn (): array => [
-                    'study_type_ids' => $this->pluckIds('user_study_types', 'study_type_id', $userId),
-                    'study_ids'      => $this->pluckIds('user_studies', 'study_id', $userId),
-                    'module_ids'     => $this->pluckIds('user_course_modules', 'module_id', $userId),
-                    'team_ids'       => $this->pluckIds('team_members', 'team_id', $userId),
-                ],
+                fn (): array => array_merge(
+                    [
+                        'study_type_ids' => $this->pluckIds('user_study_types', 'study_type_id', $userId),
+                        'study_ids'      => $this->pluckIds('user_studies', 'study_id', $userId),
+                        'module_ids'     => $this->pluckIds('user_course_modules', 'module_id', $userId),
+                    ],
+                    $this->loadTeamIdsSplit($userId),
+                ),
             );
         } catch (Throwable) {
             return $this->empty();
@@ -367,10 +370,52 @@ final class AcademicDataReader implements AcademicDataReaderInterface
     }
 
     /**
+     * Divide las membresías de equipo del usuario en departamentos (is_department=true)
+     * y equipos de trabajo (is_department=false) mediante JOIN con la tabla `teams`.
+     *
+     * @return array{department_ids: list<string>, team_ids: list<string>}
+     */
+    private function loadTeamIdsSplit(string $userId): array
+    {
+        try {
+            $query = DB::table('team_members as tm');
+
+            if (DB::connection()->getDriverName() === 'pgsql') {
+                $query->join('teams as t', DB::raw('t.id::text'), '=', DB::raw('tm.team_id::text'));
+            } else {
+                $query->join('teams as t', 't.id', '=', 'tm.team_id');
+            }
+
+            $rows = $query
+                ->where('tm.user_id', '=', $userId)
+                ->whereNull('t.deleted_at')
+                ->select('t.id', 't.is_department')
+                ->get();
+
+            $departmentIds = $rows
+                ->filter(static fn ($r): bool => (bool) ($r->is_department ?? false))
+                ->map(static fn ($r): string => (string) $r->id)
+                ->values()
+                ->all();
+
+            $teamIds = $rows
+                ->filter(static fn ($r): bool => ! (bool) ($r->is_department ?? false))
+                ->map(static fn ($r): string => (string) $r->id)
+                ->values()
+                ->all();
+
+            return ['department_ids' => $departmentIds, 'team_ids' => $teamIds];
+        } catch (QueryException) {
+            return ['department_ids' => [], 'team_ids' => []];
+        }
+    }
+
+    /**
      * @return array{
      *   study_type_ids: list<string>,
      *   study_ids: list<string>,
      *   module_ids: list<string>,
+     *   department_ids: list<string>,
      *   team_ids: list<string>,
      * }
      */
@@ -380,6 +425,7 @@ final class AcademicDataReader implements AcademicDataReaderInterface
             'study_type_ids' => [],
             'study_ids'      => [],
             'module_ids'     => [],
+            'department_ids' => [],
             'team_ids'       => [],
         ];
     }
