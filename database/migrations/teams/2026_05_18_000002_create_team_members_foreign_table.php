@@ -80,7 +80,7 @@ return new class extends Migration
         PostgresFdwMigration::dropViewOrTableInPublic(self::VIEW_NAME);
         PostgresFdwMigration::dropForeignTableIfExists(self::FDW_TABLE);
 
-        $host     = (string) config('database.fdw.team_members.host',     'maya_infra_postgres');
+        $host     = (string) config('database.fdw.team_members.host',     env('DB_HOST', 'maya_infra_postgres'));
         $port     = (string) config('database.fdw.team_members.port',     '5432');
         $database = (string) config('database.fdw.team_members.database', 'odoo');
         $username = (string) config('database.fdw.team_members.username', 'maya');

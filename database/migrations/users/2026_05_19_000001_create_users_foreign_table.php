@@ -102,7 +102,7 @@ return new class extends Migration
     {
         // Defaults: BD `odoo` del propio servidor maya_infra_postgres.
         // Cualquier app puede sobreescribir vía config('database.fdw.users.*').
-        $host     = (string) config('database.fdw.users.host', 'maya_infra_postgres');
+        $host     = (string) config('database.fdw.users.host', env('DB_HOST', 'maya_infra_postgres'));
         $port     = (string) config('database.fdw.users.port', '5432');
         $database = (string) config('database.fdw.users.database', 'odoo');
         $username = (string) config('database.fdw.users.username', 'maya');

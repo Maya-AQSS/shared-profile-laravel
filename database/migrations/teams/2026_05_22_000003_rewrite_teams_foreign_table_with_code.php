@@ -66,7 +66,7 @@ return new class extends Migration
 
     private function setupFdw(): void
     {
-        $host     = (string) config('database.fdw.teams.host',     'maya_infra_postgres');
+        $host     = (string) config('database.fdw.teams.host',     env('DB_HOST', 'maya_infra_postgres'));
         $port     = (string) config('database.fdw.teams.port',     '5432');
         $database = (string) config('database.fdw.teams.database', 'odoo');
         $username = (string) config('database.fdw.teams.username', 'maya');
@@ -119,7 +119,7 @@ return new class extends Migration
      */
     private function setupLegacyFdw(): void
     {
-        $host     = (string) config('database.fdw.teams.host',     'maya_infra_postgres');
+        $host     = (string) config('database.fdw.teams.host',     env('DB_HOST', 'maya_infra_postgres'));
         $port     = (string) config('database.fdw.teams.port',     '5432');
         $database = (string) config('database.fdw.teams.database', 'odoo');
         $username = (string) config('database.fdw.teams.username', 'maya');
