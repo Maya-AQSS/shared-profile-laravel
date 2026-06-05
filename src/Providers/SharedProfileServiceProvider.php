@@ -4,9 +4,11 @@ namespace Maya\Profile\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Maya\Profile\Repositories\Contracts\AcademicDataReaderInterface;
+use Maya\Profile\Repositories\Contracts\LanguageReaderInterface;
 use Maya\Profile\Repositories\Contracts\LocaleWriterInterface;
 use Maya\Profile\Repositories\Contracts\UserProfileResolverInterface;
 use Maya\Profile\Repositories\Readers\AcademicDataReader;
+use Maya\Profile\Repositories\Readers\LanguageReader;
 use Maya\Profile\Repositories\Resolvers\FdwEnrichedJwtResolver;
 use Maya\Profile\Repositories\Writers\NoopLocaleWriter;
 use Maya\Profile\Services\AcademicContextService;
@@ -34,5 +36,6 @@ class SharedProfileServiceProvider extends ServiceProvider
         $this->app->bindIf(UserProfileServiceInterface::class, UserProfileService::class);
         $this->app->bindIf(AcademicContextServiceInterface::class, AcademicContextService::class);
         $this->app->bindIf(AcademicDataReaderInterface::class, AcademicDataReader::class);
+        $this->app->bindIf(LanguageReaderInterface::class, LanguageReader::class);
     }
 }

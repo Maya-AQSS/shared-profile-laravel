@@ -3,6 +3,7 @@
 namespace Maya\Profile\Routing;
 
 use Illuminate\Support\Facades\Route;
+use Maya\Profile\Controllers\LanguageController;
 use Maya\Profile\Controllers\MeController;
 
 /**
@@ -20,5 +21,6 @@ final class MeRoutes
     {
         Route::get('/me', [MeController::class, 'show']);
         Route::put('/me/locale', [MeController::class, 'updateLocale']);
+        Route::get('/languages', [LanguageController::class, 'index']);
     }
 }

@@ -107,4 +107,17 @@ final class Migrations
     {
         return dirname(__DIR__).'/database/migrations/user-permissions';
     }
+
+    /**
+     * Catálogo de idiomas activos proyectado desde Odoo `res.lang`:
+     *  - vista local `languages` (code, name, is_default).
+     *
+     * Tabla física sembrada (es/va/en) en testing; FDW + vista en local/prod.
+     * Lo consume el endpoint `GET /api/v1/languages` (selector de idioma del
+     * perfil y formularios multiidioma). Read-only.
+     */
+    public static function languages(): string
+    {
+        return dirname(__DIR__).'/database/migrations/languages';
+    }
 }
