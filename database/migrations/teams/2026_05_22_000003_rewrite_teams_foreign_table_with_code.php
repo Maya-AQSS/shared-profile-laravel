@@ -3,6 +3,7 @@
 use Maya\Platform\Database\PostgresFdwMigration;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Reescribe la FDW de `teams` para leer directamente de `maya_core_team`
@@ -38,7 +39,17 @@ return new class extends Migration
     {
         if ($this->isTestEnv()) {
             // ALTER de la tabla creada por la migración anterior.
-            DB::statement('ALTER TABLE teams ADD COLUMN IF NOT EXISTS code VARCHAR(5)');
+            // sqlite no soporta "ADD COLUMN IF NOT EXISTS"; usamos Schema con guard.
+            if (DB::connection()->getDriverName() === 'sqlite') {
+                if (! Schema::hasColumn(self::VIEW_NAME, 'code')) {
+                    Schema::table(self::VIEW_NAME, function ($table): void {
+                        $table->string('code', 5)->nullable();
+                    });
+                }
+            } else {
+                DB::statement('ALTER TABLE teams ADD COLUMN IF NOT EXISTS code VARCHAR(5)');
+            }
+
             return;
         }
 
@@ -52,7 +63,16 @@ return new class extends Migration
     public function down(): void
     {
         if ($this->isTestEnv()) {
-            DB::statement('ALTER TABLE teams DROP COLUMN IF EXISTS code');
+            if (DB::connection()->getDriverName() === 'sqlite') {
+                if (Schema::hasColumn(self::VIEW_NAME, 'code')) {
+                    Schema::table(self::VIEW_NAME, function ($table): void {
+                        $table->dropColumn('code');
+                    });
+                }
+            } else {
+                DB::statement('ALTER TABLE teams DROP COLUMN IF EXISTS code');
+            }
+
             return;
         }
 
